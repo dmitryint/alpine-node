@@ -10,7 +10,7 @@ ENV VERSION=v6.3.1 NPM_VERSION=3
 # ENV CONFIG_FLAGS="--without-npm" RM_DIRS=/usr/include
 ENV CONFIG_FLAGS="--fully-static --without-npm" DEL_PKGS="libgcc libstdc++" RM_DIRS=/usr/include
 
-RUN apk add --no-cache curl make gcc g++ python linux-headers paxctl libgcc libstdc++ gnupg && \
+RUN apk add --no-cache curl make gcc g++ python linux-headers paxctl libgcc libstdc++ gnupg openssh git bash ca-certificates tar && \
   gpg --keyserver ha.pool.sks-keyservers.net --recv-keys \
     9554F04D7259F04124DE6B476D5A82AC7E37093B \
     94AE36675C464D64BAFA68DD7434390BDBE9B9C5 \
@@ -35,6 +35,9 @@ RUN apk add --no-cache curl make gcc g++ python linux-headers paxctl libgcc libs
   make install && \
   paxctl -cm /usr/bin/node && \
   cd / && \
+  mkdir -p /etc/ssl/certs/ && \
+  update-ca-certificates && \
+  curl -L https://www.npmjs.com/install.sh | sh && \
   if [ -x /usr/bin/npm ]; then \
     npm install -g npm@${NPM_VERSION} && \
     find /usr/lib/node_modules/npm -name test -o -name .bin -type d | xargs rm -rf; \
